@@ -8,7 +8,7 @@
 #'
 #' @examples TTSC_check(data = pred_table, alpha = 0.05, delta = 0.05, mrl = log(0.04))
 #'
-#' @export TTSC_checl
+#' @export TTSC_check
 #source("tol_upper.R")
 #source("dif_alpha.R")
 #source("dif_delta.R")
