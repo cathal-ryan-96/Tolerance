@@ -10,7 +10,6 @@
 #'
 #' @export TTSC_check
 #Residue withdrawel according to EMA method
-#Only taking the columns needed from our original dataset
 #Cant be used on all datasets as its more specific than the general tolerance interval function
 EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows = 25, amount = 8, y_variable = 5, time_variable = 3){
   #Setting values under the LOQ to be at the LOQ and setting the variable z = 1 if this happened
