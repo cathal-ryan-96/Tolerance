@@ -37,13 +37,13 @@ y_time_3 <- exp((Alpha_individual)*(.6)-time_3*(.1)+error_3*(.5))
 
 quantile_y3_new <- quantile(y_time_3)
 for (i in 1:length(y_time_3)){
-  if (y_time_3[i] >= quantile_y3[2] & y_time_3[i] < quantile_y3[3]){
+  if (y_time_3[i] >= quantile_y3_new[2] & y_time_3[i] < quantile_y3_new[3]){
     y_time_3[i] = exp(-6)
   }
-  else if (y_time_3[i] >= quantile_y3[3] & y_time_3[i] < quantile_y3[4]){
+  else if (y_time_3[i] >= quantile_y3_new[3] & y_time_3[i] < quantile_y3_new[4]){
     y_time_3[i] = exp(-5.5)
   }
-  else if (y_time_3[i] >= quantile_y3[4] & y_time_3[i] < quantile_y3[5]){
+  else if (y_time_3[i] >= quantile_y3_new[4] & y_time_3[i] < quantile_y3_new[5]){
     y_time_3[i] = exp(-5.2)
   }
   else{
