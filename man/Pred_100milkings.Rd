@@ -5,7 +5,7 @@
 Dataset which has 100 milking points
 }
 \description{
-cows = 20, milkings = 100
+cows = 20, amount = 100, y_variable = 2, time_variable = 3
 }
 \usage{
 }

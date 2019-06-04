@@ -4,7 +4,7 @@
 \title{
 Data from EMA with a higher LOQ value}
 \description{
-25 cows, 8 milkings}
+cows = 25, amount = 8, y_variable = 6, time_variable = 3}
 \usage{
 Pred_table_higher(x)
 }

@@ -5,7 +5,7 @@
 Dataset for data from EMA paper
 }
 \description{
-25 cows, 8 milkings}
+cows = 25, amount = 8, y_variable = 6, time_variable = 3}
 \usage{
 }
 %- maybe also 'usage' for other objects documented here.

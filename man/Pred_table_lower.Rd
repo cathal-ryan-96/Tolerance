@@ -4,7 +4,7 @@
 \title{
 Data from EMA with a lower LOQ value}
 \description{
-Cows = 25, milkings = 8
+cows = 25, amount= 8, y_variable = 6, time_variable = 3
 }
 \usage{
 }

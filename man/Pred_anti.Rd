@@ -4,7 +4,7 @@
 \title{
 Dataset regarding to antibiotic dataset}
 \description{
-20 cows, 5 milkings}
+cows = 20, amount = 5, y_variable = 5, time_variable = 2}
 \usage{
 }
 %- maybe also 'usage' for other objects documented here.
