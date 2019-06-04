@@ -1,13 +1,12 @@
-\name{Pred_100milkings}
-\alias{Pred_100milkings}
+\name{Pred_random}
+\alias{Pred_random}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Dataset which has 100 milking points
-}
+Dataset for time variable values not equal to just 1}
 \description{
-cows = 20, amount = 100, y_variable = 6, time_variable = 3
-}
+cows = 20, amount = 10, y_variable = 6, time_variable = 4}
 \usage{
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -41,7 +40,14 @@ cows = 20, amount = 100, y_variable = 6, time_variable = 3
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+##---- Should be DIRECTLY executable !! ----
+##-- ==>  Define data, use random,
+##--	or do  help(data=index)  for the standard data sets.
 
+## The function is currently defined as
+function (x) 
+{
+  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

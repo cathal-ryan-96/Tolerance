@@ -5,7 +5,7 @@
 Simulated data similar to pred_anti to show the effect of not having enough randomness
 }
 \description{
-cows = 20, amount = 5, y_variable = 2, time_variable = 3
+cows = 20, amount = 5, y_variable = 6, time_variable = 3
 }
 \usage{
 }
