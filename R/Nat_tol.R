@@ -31,10 +31,10 @@ Nat_tol <- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 0
   data$x_tol <- data$Pred + K*data$StdErrPred #Tolerance bound for each point
   data_tolerance_bound <- data$x_tol #Vector for tolerance bound
   pred <- as.numeric(data_tolerance_bound)
-  pdf("Plots for each cow using Howes tolerance.pdf")
+  pdf("Plots for each cow using Natrella's tolerance.pdf")
   for(i in 1:cows){
     subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-    plot(subset$level_log ~ subset$Time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
+    plot(subset[,y_variable] ~ subset[,time_variable], xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
     predictions_subset <- pred[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
     x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))
     points(x_axis, predictions_subset, type = 'l') #Creating line for each cows predicted values

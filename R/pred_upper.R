@@ -20,8 +20,8 @@ pred_upper <- function(data = data, alpha = 0.05, y_variable = 6, time_variable 
   pdf("Plots for each cow with Prediction interval instead.pdf")
   for(i in 1:cows){
     subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-    subset_y <- as.numeric(as.matrix(subset[y_variable]))
-    subset_time <- as.numeric(as.matrix(subset[time_variable]))
+    subset_y <- as.numeric(as.matrix(subset[,y_variable]))
+    subset_time <- as.numeric(as.matrix(subset[,time_variable]))
     plot(subset_y ~ subset_time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
     confidence_subset <- conf[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
     x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))

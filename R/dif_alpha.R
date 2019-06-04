@@ -33,7 +33,7 @@ dif_alpha <- function(data = data, alpha = seq(0.01,0.05, by = 0.01), cows = 20,
       pdf("Plots for each cow for first alpha value.pdf")
       for(i in 1:cows){
         subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-        plot(subset$level_log ~ subset$Time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
+        plot(subset[,y_variable] ~ subset[,time_variable], xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
         predictions_subset <- pred[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
         x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))
         points(x_axis, predictions_subset, type = 'l') #Creating line for each cows predicted values
@@ -42,25 +42,22 @@ dif_alpha <- function(data = data, alpha = seq(0.01,0.05, by = 0.01), cows = 20,
         TTSC[i] <- predict(model, MRL)
       }
       dev.off()
-      TTSC_MRL_first_alpha <- c()
       TTSC_MRL_first_alpha <- TTSC #TTSC for the first alpha value
     }
     else if (j == length_alpha){
-      pdf("Plots for each cow for Last alpha value.pdf")
+      pdf("Plots for each cow for last alpha value.pdf")
       for(i in 1:cows){
         subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-        subset_y <- as.numeric(as.matrix(subset[y_variable]))
-        subset_time <- as.numeric(as.matrix(subset[time_variable]))
-        plot(subset_y ~ subset_time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
+        plot(subset[,y_variable] ~ subset[,time_variable], xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
         predictions_subset <- pred[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
-        x_axis <- c(1:amount)
+        x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))
         points(x_axis, predictions_subset, type = 'l') #Creating line for each cows predicted values
         abline(h = mrl) #Adding line for mrl value
         model <- lm(x_axis ~ predictions_subset) #Finding out when the tolerance upperbounds reach the mrl value
         TTSC[i] <- predict(model, MRL)
       }
       dev.off()
-      TTSC_MRL_last_alpha <- TTSC #TTSC for the last alpha value
+      TTSC_MRL_last_alpha <- TTSC #TTSC for the first alpha value
     }
   }
   TTSC <- list(TTSC_MRL_first_alpha, TTSC_MRL_last_alpha)
