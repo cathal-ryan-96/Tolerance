@@ -9,7 +9,7 @@
 #' @examples dif_alpha(data = pred_table, alpha = c(0.05,0.06), delta = 0.05, mrl = log(0.04))
 #'
 #' @export dif_alpha
-dif_alpha <- function(data = data, alpha = seq(0.01,0.05, by = 0.01), cows = 20, amount = 10, delta = 0.05, y_variable = 2, time_variable = 3, mrl = log(0.04)){
+dif_alpha<- function(data = data, alpha, delta, cows = 20, amount = 10, y_variable = 2, time_variable = 3, mrl = log(0.04)){
   for (k in 1:length(alpha)){
     if (alpha[k] <= 0 | alpha[k] >= 1){
       break
@@ -18,56 +18,63 @@ dif_alpha <- function(data = data, alpha = seq(0.01,0.05, by = 0.01), cows = 20,
     else{
     }
   }
+  TTSC_new <- c()
   length_alpha <- length(alpha)
+  TTSC_MRL_first_alpha <- c()
+  TTSC_MRL_last_alpha <- c()
+  
   for (j in 1:length(alpha)){
     K <- c() #Vector to store the test statistic
     TTSC <- c() #Dataframe to store the TTSC value
     MRL <- data.frame(predictions_subset = mrl) #Dataframe for mrl value
     ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
     K <- (qt(1-alpha[j],cows-1,ncp))/(sqrt(cows)) #test statistic
-    data$x_tol <- c()
-    data$x_tol <- data$Pred + K*data$StdErrPred #Tolerance bound for each point
-    data_tolerance_bound <- data$x_tol #Vector for tolerance bound
-    pred <- as.numeric(data_tolerance_bound)
+    #Tolerance limit for each time point
+    for (i in 1:amount){
+      subset <- data[seq(i, nrow(data), cows), ]
+      pred <- subset$Pred
+      mean <- mean(pred)
+      sd <- sd(pred)
+      TTSC_new[i] <- mean + K*sd
+      exp_TTSC_new <- exp(TTSC_new)
+    }
     if (j == 1){
-      pdf("Plots for each cow for first alpha value.pdf")
+      pdf("Plots for each cow for first delta value.pdf")
       for(i in 1:cows){
         subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-        plot(subset[,y_variable] ~ subset[,time_variable], xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
-        predictions_subset <- pred[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
+        y <- as.matrix(subset[,y_variable])
+        time <- as.matrix(subset[,time_variable])
+        plot(y ~ time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
+        predictions_subset <- TTSC_new
         x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))
-        points(x_axis, predictions_subset, type = 'l') #Creating line for each cows predicted values
+        points(x_axis, TTSC_new, type = 'l') #Creating line for each cows predicted values
         abline(h = mrl) #Adding line for mrl value
-        model <- lm(x_axis ~ predictions_subset) #Finding out when the tolerance upperbounds reach the mrl value
-        TTSC[i] <- predict(model, MRL)
       }
       dev.off()
-      TTSC_MRL_first_alpha <- TTSC #TTSC for the first alpha value
+      model <- lm(x_axis ~ predictions_subset) #Finding out when the tolerance upperbounds reach the mrl value
+      TTSC <- predict(model, newdata = MRL)
+      TTSC_MRL_first_alpha <- as.numeric(TTSC)
     }
     else if (j == length_alpha){
-      pdf("Plots for each cow for last alpha value.pdf")
+      pdf("Plots for each cow for Last delta value.pdf")
       for(i in 1:cows){
         subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
-        plot(subset[,y_variable] ~ subset[,time_variable], xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
-        predictions_subset <- pred[(1 + (i-1)*(amount)):(amount + (i-1)*(amount))]
+        y <- as.matrix(subset[,y_variable])
+        time <- as.matrix(subset[,time_variable])
+        plot(y ~ time, xlab = 'Time', ylab = "Level") #Creating a plot for each cow actual value
+        predictions_subset <- TTSC_new
         x_axis <- as.numeric(as.matrix(data[1:amount,time_variable]))
-        points(x_axis, predictions_subset, type = 'l') #Creating line for each cows predicted values
+        points(x_axis, TTSC_new, type = 'l') #Creating line for each cows predicted values
         abline(h = mrl) #Adding line for mrl value
-        model <- lm(x_axis ~ predictions_subset) #Finding out when the tolerance upperbounds reach the mrl value
-        TTSC[i] <- predict(model, MRL)
       }
       dev.off()
-      TTSC_MRL_last_alpha <- TTSC #TTSC for the first alpha value
+      model <- lm(x_axis ~ predictions_subset) #Finding out when the tolerance upperbounds reach the mrl value
+      TTSC <- predict(model, newdata = MRL)
+      TTSC_MRL_last_alpha <- as.numeric(TTSC)
     }
   }
-  TTSC <- list(TTSC_MRL_first_alpha, TTSC_MRL_last_alpha)
-  milking_first <- floor(TTSC_MRL_last_alpha)
-  milking_last <- floor(TTSC_MRL_first_alpha)
-  different_TTSC<- which(milking_first != milking_last)
-  print(paste('The number of cows that have a different milking time when using the endpoints of the alpha vector: ', length(different_TTSC), sep ='' ))
-  if (length(different_TTSC) == 0){
-    print(paste('TTSC for alpha value:',alpha[1],'and delta value: ', delta, 'and mrl:',MRL, sep = ' '))
-    print(TTSC_MRL_first_alpha)
-  }
+  print(paste('TTSC for alpha value: ', alpha[1], 'and delta value:',delta, 'and mrl:',MRL, sep = ' '))
+  print(TTSC_MRL_first_alpha)
+  print(TTSC_MRL_last_alpha)
 }
 

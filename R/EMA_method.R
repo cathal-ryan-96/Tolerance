@@ -12,73 +12,59 @@
 #Residue withdrawel according to EMA method
 #Cant be used on all datasets as its more specific than the general tolerance interval function
 EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows = 25, amount = 8, y_variable = 5, time_variable = 3){
-  #Setting values under the LOQ to be at the LOQ and setting the variable z = 1 if this happened
-  z <- c()
-  MRL <- c()
+  WP <- c()
+  ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
+  K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
+  #Skippng monotinic regression
+  data$LOQ <- (as.numeric(data[,y_variable] <= LOQ)) #Setting up LOQ variable
+  data$graphLOQ <- 0.5*data$LOQ
+  
+  #Getting all the level points
+  level <- sort(unique(data[,y_variable]))
+  MRL_total <- level
   TTSC <- c()
-  LOQ <- LOQ
-  Total_UWP <- c()
-  data$y <- log(data[,y_variable])
-  data$level <- data[,y_variable]
-  Level <- as.numeric(as.matrix(exp(data$y)))
-  Level <- sort(unique(Level))
-  Last_level <- c()
-  First_level <- c()
-  for (j in 1:cows){
-    subset <- data[(1 + (j-1)*amount):(amount + (j-1)*amount),]
-    First_level[j] = as.numeric(as.matrix(subset[1,5]))
-    Last_level[j] = as.numeric(as.matrix(subset[8,5]))
-  }
-  Thresh_mrl_top <- abs(min(-(Last_level)))
-  Thresh_mrl_bot <- min(First_level)
-  Location_top <- as.numeric(which(Level %in% Thresh_mrl_top))
-  Location_bot <- as.numeric(which(Level %in% Thresh_mrl_bot))
-  subset_first <- data[seq(1, nrow(data), 8),]
-  subset_last <- data[seq(8, nrow(data), 8),]
-  for (i in 1:length(Level)){
-    if (Level[i] < max(subset_last$Level)){
-      i = i + 1
+  log_TTSC <- c()
+  tolerance_bound <- c()
+  time <- rep(c(1:amount), times = cows)
+  data$time_EMA <- time
+  for (i in 1:length(MRL_total)){
+    for (j in 1:cows){
+      subset_cow <- data[(1 + amount*(j-1)):(amount+amount*(j-1)),]
+      subset_cow$less <- (as.numeric(subset_cow[,y_variable] <= MRL_total[i]))
+      subset_lower <- subset(subset_cow, subset_cow$less == 1)
+      TTSC[j] <- as.numeric(subset_lower[1,time_variable])
+      log_TTSC[j] <- log(TTSC[j])
     }
-    else{
-      Location_bot = i
-      break
-    }
+    mean_TTSC <- mean(log_TTSC)
+    sd_TTSC <- sd(log_TTSC)
+    tolerance_bound[i] <- mean_TTSC + sd_TTSC*K
   }
-  Location_top <- as.numeric(which(Level == min(subset_first$Level)))
-  Location_bot <- as.numeric(Location_bot)
-  Level <- Level[Location_bot:Location_top]
-  for (i in 1:length(Level)){
-    MRL = Level[i]
-    for (k in 1:cows){
-      subset <- data[(1 + (k-1)*amount):(amount + (k-1)*amount),]
-      for (j in 1:nrow(subset)){
-        if(subset[j,5] >= MRL){
-          j = j + 1
-        }
-        else if (subset[j,5] < MRL){
-          #print(paste("For cow id: ", k, ",the last milking to be above the MRL is:", sep = " "))
-          #print(as.matrix(subset[j-1,3]))
-          #print(as.matrix(subset[j-1,5]))
-          TTSC[k] <- as.numeric(as.matrix(subset[j-1,3]))
-          break
-        }
+  tolerance_bound <- tolerance_bound[!is.na(tolerance_bound)]
+  #print(tolerance_bound)
+  if (length(tolerance_bound) != length(MRL_total)){
+    MRL_total = MRL_total[(length(MRL_total) - length(tolerance_bound) + 1):length(MRL_total)]
+  }
+  iso <- isoreg(-(tolerance_bound) ~ MRL_total)
+  tolerance_bound <- -iso$yf
+  plot(exp(tolerance_bound), MRL_total)
+  exp_tol <- exp(tolerance_bound)
+  #Making the withdrawal period go to the next milking time
+  milk <- as.numeric(as.matrix(data[1:amount,time_variable]))
+  for (i in 1:length(exp_tol)){
+    for (j in 1:length(milk)){
+      if (exp_tol[i] < milk[j]){
+        WP[i] = milk[j]
+        break
+      }
+      else{
+        j = j + 1
       }
     }
-    #print(TTSC)
-    TTSC <- as.numeric(TTSC)
-    x <- log(TTSC)
-    mean <- mean(x)
-    sd <- sd(x)
-    ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
-    K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
-    Tol <- mean + K*sd
-    UWP <- exp(Tol)
-    Total_UWP[i] <- UWP
   }
-  print("The values of the TTSC for each observation that isnt either below the maximum of the first time points or above the minimum of the last time points is:")
-  print(Total_UWP)
-  print("The amount of observations less than the maximum of the first milkings:")
-  print(Location_bot - 1)
-  print("The amount of observations greatr than the minimum of the last milkings:")
-  print(nrow(data) - Location_top)
+  WP <- WP[!is.na(WP)]
+  if ( length(WP) != length(MRL_total)){
+    MRL_total = MRL_total[(length(MRL_total) - length(WP) + 1):length(MRL_total)]
+  }
+  plot(WP, MRL_total)
+  #print(WP)
 }
