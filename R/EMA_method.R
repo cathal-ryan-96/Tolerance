@@ -23,8 +23,9 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05,
   #y_variable = 3
   #time_variable = 2
   #mrl = 0.1
-  #WP <- c()
-  #MRL_total <- c()
+  par(mfrow = c(1,2))
+  WP <- c()
+  MRL_total <- c()
   ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
   K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
   #Skippng monotinic regression

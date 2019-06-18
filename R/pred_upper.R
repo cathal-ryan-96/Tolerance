@@ -26,8 +26,8 @@ pred_upper <- function(data = data, alpha = 0.05, y_variable = 6,
     TTSC_new[i] <- mean + t*sd
     exp_TTSC_new <- exp(TTSC_new)
   }
-  print(TTSC_new)
-  print(exp_TTSC_new)
+  #print(TTSC_new)
+  #print(exp_TTSC_new)
   pdf("Plots for each cow using Prediction Intervals instead.pdf")
   for(i in 1:cows){
     subset <- data[(1 + (1-1)*(amount)):(amount + (1-1)*(amount)),] #Subsetting for each cow

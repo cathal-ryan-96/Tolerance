@@ -40,8 +40,8 @@ tol_upper<- function(cows = 20, amount = 10, data = data,
     TTSC_new[i] <- mean + K*sd
     exp_TTSC_new <- exp(TTSC_new)
   }
-  print(TTSC_new)
-  print(exp_TTSC_new)
+  #print(TTSC_new)
+  #print(exp_TTSC_new)
   pdf("Plots for each cow.pdf")
   for(i in 1:cows){
     subset <- data[(1 + (i-1)*(amount)):(amount + (i-1)*(amount)),] #Subsetting for each cow
@@ -59,5 +59,4 @@ tol_upper<- function(cows = 20, amount = 10, data = data,
   TTSC <- as.numeric(TTSC)
   print(paste('TTSC for alpha value:',alpha, 'and delta value: ', delta, 'is:', sep = ' '))
   print(TTSC)
-  #print(predictions_subset)
 }
