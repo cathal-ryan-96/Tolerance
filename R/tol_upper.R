@@ -10,7 +10,9 @@
 #'
 #' @export tol_upper
 
-tol_upper<- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 0.05, y_variable = 2, time_variable = 3, mrl = log(0.04)){
+tol_upper<- function(cows = 20, amount = 10, data = data, 
+                     alpha = 0.05, delta = 0.05,y_variable = 2, 
+                     time_variable = 3, mrl = log(0.04)){
   milking_times <- as.matrix(data[1:amount, time_variable])
   milking_times <- as.numeric(milking_times)
   diff_milking <- c()
@@ -31,7 +33,7 @@ tol_upper<- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 
   K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
   #Tolerance limit for each time point
   for (i in 1:amount){
-    subset <- data[seq(i, nrow(data), cows), ]
+    subset <- data[seq(i, nrow(data), amount), ]
     pred <- subset$Pred
     mean <- mean(pred)
     sd <- sd(pred)
@@ -57,5 +59,5 @@ tol_upper<- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 
   TTSC <- as.numeric(TTSC)
   print(paste('TTSC for alpha value:',alpha, 'and delta value: ', delta, 'is:', sep = ' '))
   print(TTSC)
-  print(predictions_subset)
+  #print(predictions_subset)
 }

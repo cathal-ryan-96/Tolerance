@@ -11,8 +11,20 @@
 #' @export EMA_method
 #Residue withdrawel according to EMA method
 #Cant be used on all datasets as its more specific than the general tolerance interval function
-EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows = 25, amount = 8, y_variable = 5, time_variable = 3){
-  WP <- c()
+EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, 
+                       delta = 0.05, cows = 25, amount = 8, 
+                       y_variable = 5, time_variable = 3, mrl){
+  #data = pred_anti
+  #LOQ = 0.04
+  #alpha = 0.05
+  #delta = 0.05 
+  #cows = 20 
+  #amount = 5 
+  #y_variable = 3
+  #time_variable = 2
+  #mrl = 0.1
+  #WP <- c()
+  #MRL_total <- c()
   ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
   K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
   #Skippng monotinic regression
@@ -20,8 +32,10 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows
   data$graphLOQ <- 0.5*data$LOQ
   
   #Getting all the level points
-  level <- sort(unique(data[,y_variable]))
-  MRL_total <- level
+  level <- unique(data[,y_variable])
+  MRL_total <- as.numeric(as.matrix(rbind(level, mrl)))
+  MRL_total <- sort(MRL_total)
+  
   TTSC <- c()
   log_TTSC <- c()
   tolerance_bound <- c()
@@ -42,12 +56,19 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows
   tolerance_bound <- tolerance_bound[!is.na(tolerance_bound)]
   #print(tolerance_bound)
   if (length(tolerance_bound) != length(MRL_total)){
-    MRL_total = MRL_total[(length(MRL_total) - length(tolerance_bound) + 1):length(MRL_total)]
+    MRL_total = MRL_total[(length(MRL_total) - 
+                             length(tolerance_bound) + 1):length(MRL_total)]
   }
   iso <- isoreg(-(tolerance_bound) ~ MRL_total)
   tolerance_bound <- -iso$yf
   plot(exp(tolerance_bound), MRL_total)
   exp_tol <- exp(tolerance_bound)
+  for (i in 1:length(MRL_total)){
+    if (MRL_total[i] == mrl){
+      WP_actual = exp_tol[i]
+    }
+  }
+  Exp_Tolerance <- as.data.frame(cbind(exp_tol, MRL_total))
   #Making the withdrawal period go to the next milking time
   milk <- as.numeric(as.matrix(data[1:amount,time_variable]))
   for (i in 1:length(exp_tol)){
@@ -66,5 +87,6 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, delta = 0.05, cows
     MRL_total = MRL_total[(length(MRL_total) - length(WP) + 1):length(MRL_total)]
   }
   plot(WP, MRL_total)
-  #print(WP)
+  print(WP)
+  print(WP_actual)
 }
