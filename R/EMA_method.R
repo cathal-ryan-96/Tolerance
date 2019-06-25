@@ -14,15 +14,15 @@
 EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, 
                        delta = 0.05, cows = 25, amount = 8, 
                        y_variable = 5, time_variable = 3, mrl){
-  #data = pred_anti
-  #LOQ = 0.04
-  #alpha = 0.05
-  #delta = 0.05 
-  #cows = 20 
-  #amount = 5 
-  #y_variable = 3
-  #time_variable = 2
-  #mrl = 0.1
+  data = pred_anti
+  LOQ = 0.02
+  alpha = 0.05
+  delta = 0.05
+  cows = 20
+  amount = 5
+  y_variable = 3
+  time_variable = 2
+  mrl = 0.1
   par(mfrow = c(1,2))
   WP <- c()
   MRL_total <- c()
@@ -62,7 +62,7 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05,
   }
   iso <- isoreg(-(tolerance_bound) ~ MRL_total)
   tolerance_bound <- -iso$yf
-  plot(exp(tolerance_bound), MRL_total)
+  plot(exp(tolerance_bound), MRL_total, ylab = "MRL", xlab = "Tolerance Bound")
   exp_tol <- exp(tolerance_bound)
   for (i in 1:length(MRL_total)){
     if (MRL_total[i] == mrl){
@@ -87,7 +87,7 @@ EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05,
   if ( length(WP) != length(MRL_total)){
     MRL_total = MRL_total[(length(MRL_total) - length(WP) + 1):length(MRL_total)]
   }
-  plot(WP, MRL_total)
+  plot(WP, MRL_total, ylab = "MRL", xlab = "Withdrawal Period")
   print(WP)
   print(WP_actual)
 }

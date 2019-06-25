@@ -12,7 +12,7 @@
 
 tol_upper<- function(cows = 20, amount = 10, data = data, 
                      alpha = 0.05, delta = 0.05,y_variable = 2, 
-                     time_variable = 3, mrl = log(0.04)){
+                     time_variable = 3, mrl = log(0.1)){
   milking_times <- as.matrix(data[1:amount, time_variable])
   milking_times <- as.numeric(milking_times)
   diff_milking <- c()
