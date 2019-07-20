@@ -14,6 +14,7 @@ Nat_tol <- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 0
   milking_times <- as.numeric(milking_times)
   diff_milking <- c()
   TTSC_new <- c()
+  data$stderror_sum <- 1
   for (i in 1:amount){
     if (i == 1){
       diff_milking[i] = milking_times[i]
@@ -28,10 +29,16 @@ Nat_tol <- function(cows = 20, amount = 10, data = data, alpha = 0.05, delta = 0
   a <- 1 - ((qnorm(1-alpha))^2)/(2*(cows-1))
   b <- (qnorm(1-delta))^2 - ((qnorm(1-alpha))^2)/(cows)
   K <- (qnorm(1-delta) + sqrt((qnorm(1-delta))^2 - a*b))/(a)
+  for (i in 1:cows){
+    subset <- data[(1 + amount*(i-1)):(amount + amount*(i-1)),]
+    stderror_sum <- sum(subset$StdErrPred)
+    subset$stderror_sum <- stderror_sum
+    data[(1 + amount*(i-1)):(amount + amount*(i-1)),] = subset
+  }
   #Tolerance limit for each time point
   for (i in 1:amount){
     subset <- data[seq(i, nrow(data), cows), ]
-    pred <- subset$Pred
+    pred <- subset$Pred + subset$stderror_sum
     mean <- mean(pred)
     sd <- sd(pred)
     TTSC_new[i] <- mean + K*sd

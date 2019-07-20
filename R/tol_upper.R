@@ -17,6 +17,8 @@ tol_upper<- function(cows = 20, amount = 10, data = data,
   milking_times <- as.numeric(milking_times)
   diff_milking <- c()
   TTSC_new <- c()
+  stderror_sum <- c()
+  data$stderror_sum <- 1
   for (i in 1:amount){
     if (i == 1){
       diff_milking[i] = milking_times[i]
@@ -31,10 +33,16 @@ tol_upper<- function(cows = 20, amount = 10, data = data,
   MRL <- data.frame(predictions_subset = mrl) #Dataframe for mrl value
   ncp <- qnorm(1-delta)*sqrt(cows) #Noncentral parameter for t-statistic
   K <- (qt(1-alpha,cows-1,ncp))/(sqrt(cows)) #test statistic
+  for (i in 1:cows){
+    subset <- data[(1 + amount*(i-1)):(amount + amount*(i-1)),]
+    stderror_sum <- sum(subset$StdErrPred)
+    subset$stderror_sum <- stderror_sum
+    data[(1 + amount*(i-1)):(amount + amount*(i-1)),] = subset
+  }
   #Tolerance limit for each time point
   for (i in 1:amount){
     subset <- data[seq(i, nrow(data), amount), ]
-    pred <- subset$Pred
+    pred <- subset$Pred + subset$stderror_sum
     mean <- mean(pred)
     sd <- sd(pred)
     TTSC_new[i] <- mean + K*sd

@@ -14,15 +14,6 @@
 EMA_method <- function(data = data, LOQ = 0.02, alpha = 0.05, 
                        delta = 0.05, cows = 25, amount = 8, 
                        y_variable = 5, time_variable = 3, mrl){
-  data = pred_anti
-  LOQ = 0.02
-  alpha = 0.05
-  delta = 0.05
-  cows = 20
-  amount = 5
-  y_variable = 3
-  time_variable = 2
-  mrl = 0.1
   par(mfrow = c(1,2))
   WP <- c()
   MRL_total <- c()
