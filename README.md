@@ -1,6 +1,8 @@
 # Tolerance
 This package is an add-on for my dissertation as part of my MSc Statistics.
-This must be used after the tobit mixed effects model has been created in SAS to provide the use of the predicted values and the standard errors of each predicted values in creation of the tolerance interval. The dataset must be in a long format with it being grouped both by the ID of each cow and also the timepoint. The SAS code assumes that it is formatted such that it is grouped by ID first and then within each cow is grouped by the Timepoints
+This must be used after the tobit mixed effects model has been created in SAS to provide the use of the predicted values and the standard errors of each predicted values in creation of the tolerance interval. The dataset must be in a long format with it being grouped both by the ID of each cow and also the timepoint. The SAS code assumes that it is formatted such that it is grouped by ID first and then within each cow is grouped by the Timepoints.
+
+
 SAS code:
 
 /* Importing the Dataset */
