@@ -17,26 +17,50 @@ run;
 *non tobit model;
 *To get the starting values for the tobit model;
 proc mixed data = anti noclprint;
+
   class id;
+  
   model level_log = Time/ solution outp = predict;
+  
   random int / subject=id;
+  
 run;
+
 * tobit model;
+
 proc nlmixed data=anti XTOL=1E-12 method=GAUSS qpoints=100;
+
 parms sigma2_u="Intercept Estimate" sigma2="Residual Estimate" beta0=beta0 beta1=beta1;
+
 bounds sigma2_u sigma2 >= 0;
+
 pi = constant('pi');
+
 mu = beta0 + b_0j + beta1*Time;
+
 if level_log > log(LOQ_value_specified) then ll = (1 / (sqrt(2*pi*sigma2))) * exp( -(level_log-mu)**2 / (2*sigma2) );
+
 if level_log <= log(LOQ_value_specified) then ll =  probnorm( (level_log - mu) / sqrt(sigma2) );
+
 L=log(ll);
+
 model level_log ~ general(L);
+
 random b_0j ~ normal(0, sigma2_u) subject=id;
+
 predict  b_0j + beta0 + beta1*tTme out=pred_table;
+
 run;
+
 quit;
+
 proc export data = work.pred_table
+
 	dbms = xlsx
+	
 	outfile = '/folders/myfolders/pred_anti.xlsx'
+	
 	replace;
+	
 run;
+
